@@ -78,7 +78,7 @@ export function AboutSection() {
 
               <div className="pt-4">
                 <Button asChild>
-                  <a href="#" download>
+                  <a href="Luis_Estigarribia_Resume.pdf" download="Luis_Estigarribia_Resume.pdf">
                     {t.hero.ctaSecondary}
                   </a>
                 </Button>

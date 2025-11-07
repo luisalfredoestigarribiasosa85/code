@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { useLanguage } from "@/contexts/language-context"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -13,32 +12,50 @@ import { Container } from "@/components/container"
 
 export function ContactSection() {
   const { t } = useLanguage()
+  // Si tu contexto expone el idioma actual, úsalo; si no, quedate con "en".
+  const currentLang = (t as any)?._lang ?? "en"
+
   const [formState, setFormState] = useState<"idle" | "success" | "error">("idle")
+  const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({ name: "", email: "", message: "", honeypot: "" })
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    // Honeypot check
-    if (formData.honeypot) {
-      return
-    }
+    // Honeypot: si está lleno, no hacemos nada
+    if (formData.honeypot) return
+
+    setLoading(true)
+    setFormState("idle")
 
     try {
-      // Placeholder for form submission - replace with actual endpoint
-      // await fetch('/api/contact', { method: 'POST', body: JSON.stringify(formData) });
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          message: formData.message.trim(),
+          lang: currentLang,
+          // El endpoint espera "honey"; mapeamos tu "honeypot"
+          honey: formData.honeypot,
+        }),
+      })
 
-      // For now, use mailto as fallback
-      const mailtoLink = `mailto:contact@example.com?subject=Portfolio Contact from ${formData.name}&body=${formData.message}`
-      window.location.href = mailtoLink
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok || !data?.ok) {
+        throw new Error(data?.error || "Request failed")
+      }
 
       setFormState("success")
       setFormData({ name: "", email: "", message: "", honeypot: "" })
-
+      // limpiar mensajes después de unos segundos (opcional)
       setTimeout(() => setFormState("idle"), 5000)
-    } catch (error) {
+    } catch (err) {
       setFormState("error")
       setTimeout(() => setFormState("idle"), 5000)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -93,7 +110,7 @@ export function ContactSection() {
                   />
                 </div>
 
-                {/* Honeypot field */}
+                {/* Honeypot (oculto) */}
                 <input
                   type="text"
                   name="honeypot"
@@ -105,14 +122,16 @@ export function ContactSection() {
                   aria-hidden="true"
                 />
 
-                <Button type="submit" className="w-full" disabled={formState === "success"}>
+                {/* Idioma actual (si preferís, podés no enviarlo como input y solo usar currentLang en el body) */}
+                <input type="hidden" name="lang" value={currentLang} />
+
+                <Button type="submit" className="w-full" disabled={loading || formState === "success"}>
                   {t.contact.form.send}
                 </Button>
 
                 {formState === "success" && (
                   <p className="text-sm text-green-600 dark:text-green-400 text-center">{t.contact.form.success}</p>
                 )}
-
                 {formState === "error" && (
                   <p className="text-sm text-destructive text-center">{t.contact.form.error}</p>
                 )}

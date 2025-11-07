@@ -26,7 +26,7 @@ export function Footer() {
                 </a>
               </Button>
               <Button variant="ghost" size="icon" asChild>
-                <a href="mailto:contact@example.com" aria-label="Email">
+                <a href="mailto:luisalfredoestigarribiasosa85@gmail.com?subject=Contact" aria-label="Email">
                   <Mail className="size-5" />
                 </a>
               </Button>

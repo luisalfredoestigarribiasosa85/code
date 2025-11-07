@@ -53,7 +53,7 @@ export function HeroSection() {
               {t.hero.ctaPrimary}
             </Button>
             <Button size="lg" variant="outline" className="w-full sm:w-auto bg-transparent" asChild>
-              <a href="#" download>
+              <a href="Luis_Estigarribia_Resume.pdf" download="Luis_Estigarribia_Resume.pdf">
                 {t.hero.ctaSecondary}
               </a>
             </Button>
