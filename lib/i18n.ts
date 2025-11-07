@@ -39,7 +39,7 @@ export const translations = {
         message: "Message",
         send: "Send",
         success: "Thanks! I'll reply soon.",
-        error: "Something went wrong. Please try again.",
+        error: "Something went wrong. Please try again. Your message is too short.",
       },
     },
     footer: {
@@ -96,7 +96,7 @@ export const translations = {
         message: "Mensaje",
         send: "Enviar",
         success: "¡Gracias! Responderé pronto.",
-        error: "Algo salió mal. Volvé a intentar.",
+        error: "Algo salió mal. Volvé a intentar. Tu mensaje es demasiado corto.",
       },
     },
     footer: {
