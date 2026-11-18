@@ -1,8 +1,7 @@
 "use client"
 
 import { useLanguage } from "@/contexts/language-context"
-import { Button } from "@/components/ui/button"
-import { Linkedin, Mail } from "lucide-react"
+import { Linkedin, Mail, FileDown } from "lucide-react"
 import { Container } from "@/components/container"
 
 export function Footer() {
@@ -10,33 +9,47 @@ export function Footer() {
   const currentYear = new Date().getFullYear()
 
   return (
-    <footer className="border-t bg-muted/30">
+    <footer className="border-t border-[var(--panel-border)]">
       <Container>
-        <div className="py-12 md:py-16">
-          <div className="flex flex-col items-center gap-6">
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" size="icon" asChild>
-                <a
-                  href="https://www.linkedin.com/in/luis-estigarribia-3225591a3/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="LinkedIn"
-                >
-                  <Linkedin className="size-5" />
-                </a>
-              </Button>
-              <Button variant="ghost" size="icon" asChild>
-                <a href="mailto:luisalfredoestigarribiasosa85@gmail.com?subject=Contact" aria-label="Email">
-                  <Mail className="size-5" />
-                </a>
-              </Button>
-            </div>
+        <div className="flex flex-col items-center justify-between gap-6 py-10 sm:flex-row">
+          <div className="flex items-center gap-3">
+            <span
+              aria-hidden="true"
+              className="flex size-8 items-center justify-center rounded-lg text-[10px] font-bold tracking-widest text-[var(--on-grad)]"
+              style={{ background: "var(--accent-grad)" }}
+            >
+              LE
+            </span>
+            <p className="text-sm text-muted-foreground">
+              © {currentYear} Luis Estigarribia. {t.footer.rights}
+            </p>
+          </div>
 
-            <div className="text-center space-y-2">
-              <p className="text-sm text-muted-foreground">
-                © {currentYear} Luis Estigarribia. {t.footer.rights}
-              </p>
-            </div>
+          <div className="flex items-center gap-2">
+            <a
+              href="https://www.linkedin.com/in/luis-estigarribia-3225591a3/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="LinkedIn"
+              className="rounded-xl p-2.5 text-muted-foreground transition-colors hover:bg-[var(--accent-soft)] hover:text-[var(--accent)]"
+            >
+              <Linkedin className="size-5" />
+            </a>
+            <a
+              href="mailto:luisalfredoestigarribiasosa85@gmail.com"
+              aria-label="Email"
+              className="rounded-xl p-2.5 text-muted-foreground transition-colors hover:bg-[var(--accent-soft)] hover:text-[var(--accent)]"
+            >
+              <Mail className="size-5" />
+            </a>
+            <a
+              href="/Luis_Estigarribia_Resume.pdf"
+              download="Luis_Estigarribia_Resume.pdf"
+              aria-label={t.hero.ctaSecondary}
+              className="rounded-xl p-2.5 text-muted-foreground transition-colors hover:bg-[var(--accent-soft)] hover:text-[var(--accent)]"
+            >
+              <FileDown className="size-5" />
+            </a>
           </div>
         </div>
       </Container>

@@ -19,7 +19,7 @@ export function Navigation() {
   useEffect(() => {
     const handleScroll = () => {
       const sections = ["home", "projects", "about", "contact"]
-      const scrollPosition = window.scrollY + 100
+      const scrollPosition = window.scrollY + 120
 
       for (const section of sections) {
         const element = document.getElementById(section)
@@ -33,6 +33,7 @@ export function Navigation() {
       }
     }
 
+    handleScroll()
     window.addEventListener("scroll", handleScroll, { passive: true })
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
@@ -48,26 +49,36 @@ export function Navigation() {
     <>
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-lg"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:rounded-xl focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground"
       >
         {t.skipToContent}
       </a>
-      <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <header className="sticky top-4 z-40">
         <Container>
-          <nav className="flex h-16 items-center justify-between" aria-label="Main navigation">
-            <Link href="/" className="text-lg font-semibold hover:text-primary transition-colors">
+          <nav
+            className="glass flex h-14 items-center justify-between gap-4 rounded-2xl px-3 sm:px-4"
+            aria-label="Main navigation"
+          >
+            <Link
+              href="/"
+              className="flex size-9 shrink-0 items-center justify-center rounded-xl text-xs font-bold tracking-widest text-[var(--on-grad)]"
+              style={{ background: "var(--accent-grad)" }}
+              aria-label="Luis Estigarribia — home"
+            >
               LE
             </Link>
 
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center gap-6">
+            {/* Desktop navigation */}
+            <div className="hidden items-center gap-1 md:flex">
               {navItems.map((item) => (
                 <a
                   key={item.id}
                   href={`/#${item.id}`}
                   className={cn(
-                    "text-sm font-medium transition-colors hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-sm px-2 py-1",
-                    activeSection === item.id ? "text-primary" : "text-muted-foreground",
+                    "rounded-lg px-4 py-2 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--accent)]",
+                    activeSection === item.id
+                      ? "text-[var(--accent)]"
+                      : "text-muted-foreground hover:text-foreground",
                   )}
                 >
                   {item.label}
@@ -75,25 +86,27 @@ export function Navigation() {
               ))}
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex shrink-0 items-center gap-1.5">
               <ThemeToggle />
               <LanguageToggle />
               <Sheet open={isOpen} onOpenChange={setIsOpen}>
                 <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon" className="md:hidden size-9" aria-label={t.nav.menu}>
-                    <Menu className="size-4" />
+                  <Button variant="ghost" size="icon" className="size-9 md:hidden" aria-label={t.nav.menu}>
+                    <Menu className="size-5" />
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="right">
-                  <div className="flex flex-col gap-4 mt-8">
+                <SheetContent side="right" className="border-[var(--panel-border)] bg-[var(--panel-solid)]">
+                  <div className="mt-10 flex flex-col gap-2">
                     {navItems.map((item) => (
                       <a
                         key={item.id}
                         href={`/#${item.id}`}
                         onClick={() => setIsOpen(false)}
                         className={cn(
-                          "text-left text-base font-medium transition-colors hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-sm px-2 py-2",
-                          activeSection === item.id ? "text-primary" : "text-muted-foreground",
+                          "rounded-xl px-4 py-3 text-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--accent)]",
+                          activeSection === item.id
+                            ? "bg-[var(--accent-soft)] text-[var(--accent)]"
+                            : "text-muted-foreground hover:text-foreground",
                         )}
                       >
                         {item.label}

@@ -13,6 +13,7 @@ export const translations = {
     hero: {
       title: "Luis Estigarribia",
       subtitle: "Full-stack developer focused on clean, reliable web apps.",
+      badge: "Open to opportunities",
       ctaPrimary: "View Projects",
       ctaSecondary: "Download CV",
     },
@@ -34,6 +35,7 @@ export const translations = {
     contact: {
       title: "Contact",
       body: "Want to collaborate or have a question? Send a message and I'll get back to you.",
+      direct: "Or reach out directly",
       form: {
         name: "Name",
         email: "Email",
@@ -71,6 +73,7 @@ export const translations = {
     hero: {
       title: "Luis Estigarribia",
       subtitle: "Desarrollador full-stack enfocado en apps web claras y confiables.",
+      badge: "Abierto a oportunidades",
       ctaPrimary: "Ver Proyectos",
       ctaSecondary: "Descargar CV",
     },
@@ -92,6 +95,7 @@ export const translations = {
     contact: {
       title: "Contacto",
       body: "¿Querés colaborar o tenés una consulta? Enviá un mensaje y te responderé pronto.",
+      direct: "O escribime directo",
       form: {
         name: "Nombre",
         email: "Correo",

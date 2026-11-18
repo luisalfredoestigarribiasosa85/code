@@ -1,183 +1,144 @@
 "use client"
 
+import type { ReactNode } from "react"
 import { useLanguage } from "@/contexts/language-context"
 import type { Project } from "@/lib/projects"
 import { Navigation } from "@/components/navigation"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent } from "@/components/ui/card"
-import { ExternalLink, ArrowLeft } from "lucide-react"
+import { ExternalLink, ArrowLeft, ArrowUpRight } from "lucide-react"
 import Link from "next/link"
 import { Container } from "@/components/container"
+
+function Section({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <section className="panel space-y-4 p-6 sm:p-8">
+      <h2 className="text-lg font-semibold tracking-tight text-foreground sm:text-xl">{title}</h2>
+      {children}
+    </section>
+  )
+}
+
+function Bullets({ items }: { items: string[] }) {
+  return (
+    <ul className="max-w-prose space-y-2.5 text-muted-foreground">
+      {items.map((item, i) => (
+        <li key={i} className="flex gap-3 leading-relaxed">
+          <span aria-hidden="true" className="mt-[0.45em] size-1.5 shrink-0 rounded-full bg-[var(--accent)]" />
+          {item}
+        </li>
+      ))}
+    </ul>
+  )
+}
 
 export function ProjectDetailClient({ project }: { project: Project }) {
   const { locale, t } = useLanguage()
 
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" })
-  }
-
   return (
     <>
       <Navigation />
-      <main id="main-content" className="min-h-screen">
-        <Container>
-          <article className="py-12 md:py-16 lg:py-20">
-            <div className="mx-auto max-w-4xl space-y-12">
-              {/* Back button */}
-              <Button variant="ghost" asChild onClick={scrollToTop}>
+      <main id="main-content" className="relative min-h-screen overflow-hidden">
+        {/* background outline slug */}
+        <p
+          aria-hidden="true"
+          className="outline-word pointer-events-none absolute -top-2 right-0 select-none text-[clamp(3.5rem,14vw,9rem)] font-bold uppercase leading-none tracking-tighter"
+        >
+          {project.slug}
+        </p>
+
+        <Container className="relative">
+          <article className="mx-auto max-w-4xl space-y-6 py-14 sm:py-16 lg:py-20">
+            {/* Back */}
+            <Button variant="ghost" asChild className="-ml-3 text-muted-foreground hover:text-foreground">
+              <Link href="/#projects">
+                <ArrowLeft className="size-4" />
+                {t.caseStudy.backToProjects}
+              </Link>
+            </Button>
+
+            {/* Header */}
+            <header className="space-y-6 pb-6">
+              <h1 className="text-[clamp(2.25rem,6vw,3.5rem)] font-bold leading-[1.02] tracking-tighter">
+                {project.title[locale]}
+              </h1>
+              <p className="max-w-prose text-xl leading-relaxed text-muted-foreground">
+                {project.description[locale]}
+              </p>
+              <div className="flex flex-wrap gap-3">
+                {project.links.map((link) => (
+                  <Button key={link.href} asChild className="h-11 px-5">
+                    <a href={link.href} target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="size-4" />
+                      {link.label}
+                      <ArrowUpRight className="size-4" />
+                    </a>
+                  </Button>
+                ))}
+              </div>
+            </header>
+
+            {project.overview && (
+              <Section title={t.caseStudy.overview}>
+                <p className="max-w-prose text-lg leading-relaxed text-muted-foreground">
+                  {project.overview[locale]}
+                </p>
+              </Section>
+            )}
+
+            <Section title={t.caseStudy.techStack}>
+              <div className="flex flex-wrap gap-2">
+                {project.stack.map((tech) => (
+                  <span key={tech} className="chip">
+                    {tech}
+                  </span>
+                ))}
+              </div>
+            </Section>
+
+            {project.role && (
+              <Section title={t.caseStudy.role}>
+                <Bullets items={project.role} />
+              </Section>
+            )}
+
+            {project.problemSolution && (
+              <Section title={t.caseStudy.problem}>
+                <p className="max-w-prose text-lg leading-relaxed text-muted-foreground">
+                  {project.problemSolution[locale]}
+                </p>
+              </Section>
+            )}
+
+            {project.architecture && (
+              <Section title={t.caseStudy.architecture}>
+                <Bullets items={project.architecture} />
+              </Section>
+            )}
+
+            {project.challenges && (
+              <Section title={t.caseStudy.challenges}>
+                <Bullets items={project.challenges} />
+              </Section>
+            )}
+
+            {project.outcomes && (
+              <Section title={t.caseStudy.outcomes}>
+                <Bullets items={project.outcomes} />
+              </Section>
+            )}
+
+            <Section title={t.caseStudy.links}>
+              <Bullets items={project.highlightPoints} />
+            </Section>
+
+            <div className="pt-4">
+              <Button variant="outline" asChild className="h-11 px-5">
                 <Link href="/#projects">
-                  <ArrowLeft className="size-4 mr-2" />
+                  <ArrowLeft className="size-4" />
                   {t.caseStudy.backToProjects}
                 </Link>
               </Button>
-
-              {/* Header */}
-              <header className="space-y-6">
-                <h1 className="text-[clamp(1.75rem,3vw,2.5rem)] font-bold tracking-tight text-balance">
-                  {project.title[locale]}
-                </h1>
-                <p className="text-xl text-muted-foreground leading-relaxed max-w-prose">
-                  {project.description[locale]}
-                </p>
-                <div className="flex flex-wrap gap-3">
-                  {project.links.map((link) => (
-                    <Button key={link.href} asChild>
-                      <a href={link.href} target="_blank" rel="noopener noreferrer">
-                        <ExternalLink className="size-4 mr-2" />
-                        {link.label}
-                      </a>
-                    </Button>
-                  ))}
-                </div>
-              </header>
-
-              {/* Overview */}
-              {project.overview && (
-                <Card className="rounded-2xl shadow-lg">
-                  <CardContent className="pt-6 space-y-4">
-                    <h2 className="text-[clamp(1.25rem,2.2vw,1.75rem)] font-bold">{t.caseStudy.overview}</h2>
-                    <p className="text-lg leading-relaxed text-muted-foreground max-w-prose">
-                      {project.overview[locale]}
-                    </p>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Tech Stack */}
-              <Card className="rounded-2xl shadow-lg">
-                <CardContent className="pt-6 space-y-4">
-                  <h2 className="text-[clamp(1.25rem,2.2vw,1.75rem)] font-bold">{t.caseStudy.techStack}</h2>
-                  <div className="flex flex-wrap gap-2">
-                    {project.stack.map((tech) => (
-                      <Badge key={tech} variant="secondary" className="text-sm">
-                        {tech}
-                      </Badge>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Role & Responsibilities */}
-              {project.role && (
-                <Card className="rounded-2xl shadow-lg">
-                  <CardContent className="pt-6 space-y-4">
-                    <h2 className="text-[clamp(1.25rem,2.2vw,1.75rem)] font-bold">{t.caseStudy.role}</h2>
-                    <ul className="list-disc list-inside space-y-2 text-muted-foreground max-w-prose">
-                      {project.role.map((item, index) => (
-                        <li key={index} className="leading-relaxed">
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Problem → Solution */}
-              {project.problemSolution && (
-                <Card className="rounded-2xl shadow-lg">
-                  <CardContent className="pt-6 space-y-4">
-                    <h2 className="text-[clamp(1.25rem,2.2vw,1.75rem)] font-bold">{t.caseStudy.problem}</h2>
-                    <p className="text-lg leading-relaxed text-muted-foreground max-w-prose">
-                      {project.problemSolution[locale]}
-                    </p>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Architecture */}
-              {project.architecture && (
-                <Card className="rounded-2xl shadow-lg">
-                  <CardContent className="pt-6 space-y-4">
-                    <h2 className="text-[clamp(1.25rem,2.2vw,1.75rem)] font-bold">{t.caseStudy.architecture}</h2>
-                    <ul className="list-disc list-inside space-y-2 text-muted-foreground max-w-prose">
-                      {project.architecture.map((item, index) => (
-                        <li key={index} className="leading-relaxed">
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Challenges */}
-              {project.challenges && (
-                <Card className="rounded-2xl shadow-lg">
-                  <CardContent className="pt-6 space-y-4">
-                    <h2 className="text-[clamp(1.25rem,2.2vw,1.75rem)] font-bold">{t.caseStudy.challenges}</h2>
-                    <ul className="list-disc list-inside space-y-2 text-muted-foreground max-w-prose">
-                      {project.challenges.map((item, index) => (
-                        <li key={index} className="leading-relaxed">
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Outcomes */}
-              {project.outcomes && (
-                <Card className="rounded-2xl shadow-lg">
-                  <CardContent className="pt-6 space-y-4">
-                    <h2 className="text-[clamp(1.25rem,2.2vw,1.75rem)] font-bold">{t.caseStudy.outcomes}</h2>
-                    <ul className="list-disc list-inside space-y-2 text-muted-foreground max-w-prose">
-                      {project.outcomes.map((item, index) => (
-                        <li key={index} className="leading-relaxed">
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Highlight Points */}
-              <Card className="rounded-2xl shadow-lg bg-muted/50">
-                <CardContent className="pt-6 space-y-4">
-                  <h2 className="text-[clamp(1.25rem,2.2vw,1.75rem)] font-bold">{t.caseStudy.links}</h2>
-                  <ul className="list-disc list-inside space-y-2 text-muted-foreground max-w-prose">
-                    {project.highlightPoints.map((point, index) => (
-                      <li key={index} className="leading-relaxed">
-                        {point}
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-
-              {/* Back to projects */}
-              <div className="pt-8">
-                <Button variant="outline" asChild onClick={scrollToTop}>
-                  <Link href="/#projects">
-                    <ArrowLeft className="size-4 mr-2" />
-                    {t.caseStudy.backToProjects}
-                  </Link>
-                </Button>
-              </div>
             </div>
           </article>
         </Container>
