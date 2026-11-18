@@ -21,7 +21,7 @@ export function ProjectDetailClient({ project }: { project: Project }) {
   return (
     <>
       <Navigation />
-      <main className="min-h-screen">
+      <main id="main-content" className="min-h-screen">
         <Container>
           <article className="py-12 md:py-16 lg:py-20">
             <div className="mx-auto max-w-4xl space-y-12">

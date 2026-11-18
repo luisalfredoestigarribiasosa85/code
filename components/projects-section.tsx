@@ -13,7 +13,7 @@ export function ProjectsSection() {
   const { locale, t } = useLanguage()
 
   return (
-    <section id="projects" className="py-16 sm:py-20 lg:py-24">
+    <section id="projects" className="scroll-mt-20 py-16 sm:py-20 lg:py-24">
       <Container>
         <div className="space-y-12">
           <div className="text-center space-y-4">

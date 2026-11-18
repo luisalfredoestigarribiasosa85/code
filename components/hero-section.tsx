@@ -27,18 +27,8 @@ const techStack = [
 export function HeroSection() {
   const { t } = useLanguage()
 
-  const scrollToProjects = () => {
-    const element = document.getElementById("projects")
-    if (element) {
-      const offset = 80
-      const elementPosition = element.getBoundingClientRect().top
-      const offsetPosition = elementPosition + window.scrollY - offset
-      window.scrollTo({ top: offsetPosition, behavior: "smooth" })
-    }
-  }
-
   return (
-    <section id="home" className="min-h-[60vh] flex items-center py-16 sm:py-20 lg:py-24">
+    <section id="home" className="scroll-mt-20 min-h-[60vh] flex items-center py-16 sm:py-20 lg:py-24">
       <Container>
         <div className="mx-auto max-w-3xl text-center space-y-8">
           <div className="space-y-4">
@@ -49,11 +39,11 @@ export function HeroSection() {
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-3">
-            <Button size="lg" onClick={scrollToProjects} className="w-full sm:w-auto">
-              {t.hero.ctaPrimary}
+            <Button size="lg" asChild className="w-full sm:w-auto">
+              <a href="#projects">{t.hero.ctaPrimary}</a>
             </Button>
             <Button size="lg" variant="outline" className="w-full sm:w-auto bg-transparent" asChild>
-              <a href="Luis_Estigarribia_Resume.pdf" download="Luis_Estigarribia_Resume.pdf">
+              <a href="/Luis_Estigarribia_Resume.pdf" download="Luis_Estigarribia_Resume.pdf">
                 {t.hero.ctaSecondary}
               </a>
             </Button>

@@ -6,29 +6,27 @@ import { type Locale, translations } from "@/lib/i18n"
 interface LanguageContextType {
   locale: Locale
   setLocale: (locale: Locale) => void
-  t: typeof translations.en
+  t: (typeof translations)[Locale]
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined)
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>("en")
-  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    setMounted(true)
-    const saved = localStorage.getItem("locale") as Locale
-    if (saved && (saved === "en" || saved === "es")) {
+    const saved = localStorage.getItem("locale")
+    if (saved === "en" || saved === "es") {
       setLocaleState(saved)
       document.documentElement.lang = saved
-    } else {
-      // Detect browser language
-      const browserLang = navigator.language.toLowerCase()
-      const detectedLocale = browserLang.startsWith("es") ? "es" : "en"
-      setLocaleState(detectedLocale)
-      document.documentElement.lang = detectedLocale
-      localStorage.setItem("locale", detectedLocale)
+      return
     }
+    // Detect browser language
+    const browserLang = navigator.language.toLowerCase()
+    const detectedLocale: Locale = browserLang.startsWith("es") ? "es" : "en"
+    setLocaleState(detectedLocale)
+    document.documentElement.lang = detectedLocale
+    localStorage.setItem("locale", detectedLocale)
   }, [])
 
   const setLocale = (newLocale: Locale) => {
@@ -39,11 +37,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
   const t = translations[locale]
 
-  // Prevent hydration mismatch
-  if (!mounted) {
-    return null
-  }
-
+  // Always render children so the page is server-rendered; locale syncs after mount.
   return <LanguageContext.Provider value={{ locale, setLocale, t }}>{children}</LanguageContext.Provider>
 }
 

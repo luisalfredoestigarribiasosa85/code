@@ -33,24 +33,9 @@ export function Navigation() {
       }
     }
 
-    window.addEventListener("scroll", handleScroll)
+    window.addEventListener("scroll", handleScroll, { passive: true })
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
-
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId)
-    if (element) {
-      const offset = 80
-      const elementPosition = element.getBoundingClientRect().top
-      const offsetPosition = elementPosition + window.scrollY - offset
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth",
-      })
-    }
-    setIsOpen(false)
-  }
 
   const navItems = [
     { id: "home", label: t.nav.home },
@@ -77,16 +62,16 @@ export function Navigation() {
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center gap-6">
               {navItems.map((item) => (
-                <button
+                <a
                   key={item.id}
-                  onClick={() => scrollToSection(item.id)}
+                  href={`/#${item.id}`}
                   className={cn(
                     "text-sm font-medium transition-colors hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-sm px-2 py-1",
                     activeSection === item.id ? "text-primary" : "text-muted-foreground",
                   )}
                 >
                   {item.label}
-                </button>
+                </a>
               ))}
             </div>
 
@@ -95,23 +80,24 @@ export function Navigation() {
               <LanguageToggle />
               <Sheet open={isOpen} onOpenChange={setIsOpen}>
                 <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon" className="md:hidden size-9" aria-label={t.nav.language}>
+                  <Button variant="ghost" size="icon" className="md:hidden size-9" aria-label={t.nav.menu}>
                     <Menu className="size-4" />
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="right">
                   <div className="flex flex-col gap-4 mt-8">
                     {navItems.map((item) => (
-                      <button
+                      <a
                         key={item.id}
-                        onClick={() => scrollToSection(item.id)}
+                        href={`/#${item.id}`}
+                        onClick={() => setIsOpen(false)}
                         className={cn(
                           "text-left text-base font-medium transition-colors hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-sm px-2 py-2",
                           activeSection === item.id ? "text-primary" : "text-muted-foreground",
                         )}
                       >
                         {item.label}
-                      </button>
+                      </a>
                     ))}
                   </div>
                 </SheetContent>

@@ -11,9 +11,7 @@ import { Label } from "@/components/ui/label"
 import { Container } from "@/components/container"
 
 export function ContactSection() {
-  const { t } = useLanguage()
-  // Si tu contexto expone el idioma actual, úsalo; si no, quedate con "en".
-  const currentLang = (t as any)?._lang ?? "en"
+  const { t, locale } = useLanguage()
 
   const [formState, setFormState] = useState<"idle" | "success" | "error">("idle")
   const [loading, setLoading] = useState(false)
@@ -36,8 +34,7 @@ export function ContactSection() {
           name: formData.name.trim(),
           email: formData.email.trim(),
           message: formData.message.trim(),
-          lang: currentLang,
-          // El endpoint espera "honey"; mapeamos tu "honeypot"
+          lang: locale,
           honey: formData.honeypot,
         }),
       })
@@ -51,7 +48,7 @@ export function ContactSection() {
       setFormData({ name: "", email: "", message: "", honeypot: "" })
       // limpiar mensajes después de unos segundos (opcional)
       setTimeout(() => setFormState("idle"), 5000)
-    } catch (err) {
+    } catch {
       setFormState("error")
       setTimeout(() => setFormState("idle"), 5000)
     } finally {
@@ -60,7 +57,7 @@ export function ContactSection() {
   }
 
   return (
-    <section id="contact" className="py-16 sm:py-20 lg:py-24">
+    <section id="contact" className="scroll-mt-20 py-16 sm:py-20 lg:py-24">
       <Container>
         <div className="mx-auto max-w-2xl space-y-12">
           <div className="text-center space-y-4">
@@ -80,6 +77,8 @@ export function ContactSection() {
                   <Input
                     id="name"
                     required
+                    minLength={2}
+                    maxLength={80}
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     placeholder={t.contact.form.name}
@@ -104,13 +103,15 @@ export function ContactSection() {
                     id="message"
                     required
                     rows={5}
+                    minLength={10}
+                    maxLength={2000}
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                     placeholder={t.contact.form.message}
                   />
                 </div>
 
-                {/* Honeypot (oculto) */}
+                {/* Honeypot (oculto para humanos, visible para bots) */}
                 <input
                   type="text"
                   name="honeypot"
@@ -122,19 +123,18 @@ export function ContactSection() {
                   aria-hidden="true"
                 />
 
-                {/* Idioma actual (si preferís, podés no enviarlo como input y solo usar currentLang en el body) */}
-                <input type="hidden" name="lang" value={currentLang} />
-
                 <Button type="submit" className="w-full" disabled={loading || formState === "success"}>
-                  {t.contact.form.send}
+                  {loading ? "…" : t.contact.form.send}
                 </Button>
 
-                {formState === "success" && (
-                  <p className="text-sm text-green-600 dark:text-green-400 text-center">{t.contact.form.success}</p>
-                )}
-                {formState === "error" && (
-                  <p className="text-sm text-destructive text-center">{t.contact.form.error}</p>
-                )}
+                <div aria-live="polite" role="status">
+                  {formState === "success" && (
+                    <p className="text-sm text-green-600 dark:text-green-400 text-center">{t.contact.form.success}</p>
+                  )}
+                  {formState === "error" && (
+                    <p className="text-sm text-destructive text-center">{t.contact.form.error}</p>
+                  )}
+                </div>
               </form>
             </CardContent>
           </Card>

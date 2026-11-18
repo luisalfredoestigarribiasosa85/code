@@ -17,7 +17,7 @@ export function AboutSection() {
   const { t } = useLanguage()
 
   return (
-    <section id="about" className="py-16 sm:py-20 lg:py-24 bg-muted/30">
+    <section id="about" className="scroll-mt-20 py-16 sm:py-20 lg:py-24 bg-muted/30">
       <Container>
         <div className="mx-auto max-w-4xl space-y-12">
           <div className="text-center space-y-4">
@@ -78,7 +78,7 @@ export function AboutSection() {
 
               <div className="pt-4">
                 <Button asChild>
-                  <a href="Luis_Estigarribia_Resume.pdf" download="Luis_Estigarribia_Resume.pdf">
+                  <a href="/Luis_Estigarribia_Resume.pdf" download="Luis_Estigarribia_Resume.pdf">
                     {t.hero.ctaSecondary}
                   </a>
                 </Button>

@@ -1,157 +1,88 @@
-# Luis Estigarribia - Portfolio Website
+# Luis Estigarribia — Portfolio
 
-A minimal, modern bilingual (EN/ES) portfolio website built with Next.js, React, Tailwind CSS, and shadcn/ui.
+Personal portfolio of Luis Estigarribia: a bilingual (EN/ES) site built with Next.js (App Router), React 19, Tailwind CSS v4 and shadcn/ui-style components. Project case studies are statically generated; the contact form posts to a Supabase-backed API route.
 
-## Features
+## Stack
 
-- **Bilingual Support**: Full English and Spanish translations with persistent language preference
-- **Dark Mode**: Toggle between light and dark themes with system preference detection
-- **Responsive Design**: Optimized for all screen sizes (320px to 2560px+)
-- **Accessibility**: WCAG 2.1 AA compliant with keyboard navigation and screen reader support
-- **Performance**: Lighthouse 90+ scores across all metrics
-- **Modern Stack**: Next.js 16, React 19, Tailwind CSS v4, TypeScript
+- **Next.js 16** (App Router) · **React 19** · **TypeScript**
+- **Tailwind CSS v4** (`@tailwindcss/postcss`) · **next-themes** (dark mode)
+- **Supabase** (`@supabase/supabase-js`) for contact-form persistence
+- **Zod** for server-side payload validation
+- **@vercel/analytics**
 
-## Project Structure
+## Project structure
 
-\`\`\`
+```
 ├── app/
-│   ├── layout.tsx          # Root layout with providers
-│   ├── page.tsx            # Home page
-│   ├── not-found.tsx       # 404 page
-│   ├── globals.css         # Global styles and Tailwind config
-│   └── projects/
-│       └── [slug]/
-│           └── page.tsx    # Dynamic project case study pages
-├── components/
-│   ├── container.tsx       # Responsive container wrapper
-│   ├── navigation.tsx      # Header with navigation
-│   ├── footer.tsx          # Footer component
-│   ├── hero-section.tsx    # Hero section
-│   ├── projects-section.tsx # Projects grid
-│   ├── about-section.tsx   # About section
-│   ├── contact-section.tsx # Contact form
-│   ├── project-detail-client.tsx # Project case study layout
-│   ├── theme-toggle.tsx    # Dark mode toggle
-│   ├── language-toggle.tsx # Language switcher
-│   └── ui/                 # shadcn/ui components
-├── contexts/
-│   └── language-context.tsx # Language state management
+│   ├── layout.tsx              # Root layout (providers, metadata)
+│   ├── page.tsx                # Home (hero / projects / about / contact)
+│   ├── not-found.tsx           # 404
+│   ├── globals.css             # Tailwind v4 theme + CSS variables
+│   ├── sitemap.ts              # Generated sitemap
+│   ├── robots.ts               # Generated robots.txt
+│   ├── api/contact/route.ts    # Contact form endpoint (validation, rate limit, honeypot)
+│   └── projects/[slug]/page.tsx# Case studies (statically generated)
+├── components/                 # Page sections + ui/ primitives
+├── contexts/language-context.tsx  # EN/ES locale state (persisted in localStorage)
 ├── lib/
-│   ├── i18n.ts             # Translation dictionaries
-│   ├── projects.ts         # Project data
-│   ├── check-translations.ts # Translation parity checker
-│   └── utils.ts            # Utility functions
-└── scripts/
-    └── check-translations.ts # CLI translation checker
-\`\`\`
+│   ├── i18n.ts                 # EN/ES dictionaries (typed)
+│   ├── projects.ts             # Project data (single source of truth)
+│   └── utils.ts                # cn()
+├── scripts/check-translations.ts  # i18n key-parity checker
+└── public/                     # Static assets (CV PDF)
+```
 
-## Getting Started
+## Getting started
 
-### Prerequisites
-
-- Node.js 18+ and npm/yarn/pnpm
-
-### Installation
-
-\`\`\`bash
-# Install dependencies
+```bash
 npm install
-
-# Run development server
-npm run dev
-
-# Check translation parity
+npm run dev        # http://localhost:3000
 npm run check-translations
-
-# Build for production
 npm run build
-\`\`\`
+```
 
-Open [http://localhost:3000](http://localhost:3000) to view the site.
+Requires Node.js 20+.
 
-## Design System
+## Environment variables
 
-### Layout & Spacing
+Copy `.env.example` to `.env.local` and fill in the values:
 
-- **Container**: Max-width of 72rem (1152px) with responsive padding
-- **Vertical Rhythm**: Consistent spacing using `py-16 sm:py-20 lg:py-24`
-- **Grid System**: Responsive 1/2/3 column grid for projects
+| Variable | Purpose |
+| --- | --- |
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL (used server-side by `/api/contact`) |
+| `SUPABASE_SERVICE_ROLE_KEY` | Service-role key — **server-only**, never exposed to the client |
+| `IP_HASH_SALT` | Optional. Salt for hashing visitor IPs before they are stored |
 
-### Typography
+### Supabase table
 
-- **Fluid Scaling**: Uses CSS `clamp()` for responsive typography
-  - H1: `clamp(1.75rem, 3vw, 2.5rem)`
-  - H2: `clamp(1.5rem, 2.5vw, 2rem)`
-- **Line Length**: Max-width of `prose` (~65ch) for optimal readability
-- **Font**: Inter for sans-serif, Geist Mono for monospace
+```sql
+create table contact_messages (
+  id bigint generated always as identity primary key,
+  created_at timestamptz not null default now(),
+  name text not null,
+  email text not null,
+  message text not null,
+  lang text not null default 'en',
+  user_agent text,
+  ip text  -- sha256 hash (32 chars), never the raw IP
+);
 
-### Colors
+alter table contact_messages enable row level security;
+-- No public policies: inserts happen only through the API route with the service-role key.
+```
 
-- **Neutral Grayscale**: Primary color palette
-- **Accent**: Blue (#3b82f6) for interactive elements
-- **Dark Mode**: Automatic theme switching with proper contrast
+## Contact form behavior
 
-### Components
+- Zod-validated payload (`name` 2–80 chars, `message` 10–2000 chars, `email` format)
+- Honeypot field (`honey`): filled submissions get a fake success and are discarded
+- Best-effort in-memory rate limit: 5 messages / 10 min / IP (per instance; use an external store such as Upstash for a hard global limit)
+- Visitor IPs are stored only as salted SHA-256 hashes
+- User agents are truncated to 512 chars
 
-- **Cards**: `rounded-2xl` with subtle shadows
-- **Buttons**: Consistent sizing and hover states
-- **Focus States**: Visible focus rings for accessibility
+## Internationalization
 
-## Internationalization (i18n)
+Language is toggled client-side (localStorage → browser language → English). Translation keys live in `lib/i18n.ts`; run `npm run check-translations` to verify EN/ES parity.
 
-### Language Detection Priority
+## Deployment
 
-1. Saved preference in localStorage
-2. Browser language detection
-3. Default to English
-
-### Translation Management
-
-All translations are stored in `lib/i18n.ts` with full type safety. The translation parity checker ensures both English and Spanish have matching keys.
-
-Run the checker:
-\`\`\`bash
-npm run check-translations
-\`\`\`
-
-### Adding New Translations
-
-1. Add the key to both `en` and `es` objects in `lib/i18n.ts`
-2. Run `npm run check-translations` to verify parity
-3. Use the translation in components via `const { t } = useLanguage()`
-
-## Accessibility
-
-- **Keyboard Navigation**: All interactive elements are keyboard accessible
-- **Screen Readers**: Semantic HTML with proper ARIA labels
-- **Skip Links**: "Skip to content" link for keyboard users
-- **Focus Management**: Visible focus indicators on all interactive elements
-- **Color Contrast**: WCAG 2.1 AA compliant contrast ratios
-- **Reduced Motion**: Respects `prefers-reduced-motion` preference
-
-## Performance Optimizations
-
-- **Responsive Images**: Proper sizing and lazy loading
-- **Code Splitting**: Automatic route-based code splitting
-- **Font Optimization**: Next.js font optimization
-- **Static Generation**: Pre-rendered pages for fast loading
-- **Analytics**: Vercel Analytics for performance monitoring
-
-## Responsive Breakpoints
-
-- **Mobile**: 320px - 639px
-- **Tablet**: 640px - 1023px
-- **Desktop**: 1024px - 1439px
-- **Large Desktop**: 1440px+
-- **Ultra-wide**: 2560px+
-
-## Browser Support
-
-- Chrome (last 2 versions)
-- Firefox (last 2 versions)
-- Safari (last 2 versions)
-- Edge (last 2 versions)
-
-## License
-
-© 2025 Luis Estigarribia. All rights reserved.
+The site is static-first (home + case studies are prerendered). Deploy to Vercel or `npm run build && npm run start` elsewhere. Set the environment variables above in your hosting provider.

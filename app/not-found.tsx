@@ -28,7 +28,7 @@ export default function NotFound() {
   return (
     <>
       <Navigation />
-      <main className="min-h-screen flex items-center justify-center py-24">
+      <main id="main-content" className="min-h-screen flex items-center justify-center py-24">
         <Container>
           <div className="text-center space-y-6">
             <h1 className="text-[clamp(3rem,8vw,6rem)] font-bold">404</h1>
